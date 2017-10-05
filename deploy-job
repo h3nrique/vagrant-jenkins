@@ -1,0 +1,53 @@
+Plugins:
+Ansible
+Promoted
+Pipeline
+
+Deploy Job
+
+group_id
+artifact_id
+version
+extension
+management_user
+management_password
+management_host
+management_port
+
+8f2391b3aed04798bac58435e5e8f56d
+
+
+---
+- hosts: 127.0.0.1
+  connection: local
+  environment:
+    JBOSS_MANAGEMENT_USER: "{{ lookup('env','management_user') }}"
+    JBOSS_MANAGEMENT_PASSWORD: "{{ lookup('env','management_password') }}"
+    JBOSS_MANAGEMENT_HOST: "{{ lookup('env','management_host') }}"
+    JBOSS_MANAGEMENT_PORT: "{{ lookup('env','management_port') }}"
+  tasks:
+  
+  - maven_artifact:
+      group_id: "{{ lookup('env','group_id') }}"
+      artifact_id: "{{ lookup('env','artifact_id') }}"
+      extension: "{{ lookup('env','extension') }}"
+      version: "{{ lookup('env','version') }}"
+      dest: "/tmp/{{ lookup('env','artifact_id') }}"
+      
+  - name: Deploy
+      jboss_deployment:
+        name: "{{ lookup('env','artifact_id') }} / {{ lookup('env','extension') }}"
+        state: present
+        src: "/tmp/{{ lookup('env','artifact_id') }}"
+      register: deploy
+      
+  - debug:
+        msg: "{{  deploy }}"
+        
+        
+        
+python get-pip.py
+curl "https://bootstrap.pypa.io/get-pip.py" -o "get-pip.py"
+pip install git+https://github.com/jairojunior/ansible.git
+
+gcc

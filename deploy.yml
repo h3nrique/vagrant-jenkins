@@ -1,0 +1,26 @@
+---
+- hosts: 127.0.0.1
+  connection: local
+  environment:
+    JBOSS_MANAGEMENT_USER: "{{ lookup('env','management_user') }}"
+    JBOSS_MANAGEMENT_PASSWORD: "{{ lookup('env','management_password') }}"
+    JBOSS_MANAGEMENT_HOST: "{{ lookup('env','management_host') }}"
+    JBOSS_MANAGEMENT_PORT: "{{ lookup('env','management_port') }}"
+  tasks:
+
+  - maven_artifact:
+      group_id: "{{ lookup('env','group_id') }}"
+      artifact_id: "{{ lookup('env','artifact_id') }}"
+      extension: "{{ lookup('env','extension') }}"
+      version: "{{ lookup('env','version') }}"
+      dest: "/tmp/{{ lookup('env','artifact_id') }}"
+
+  - name: Deploy
+    jboss_deployment:
+      name: "{{ lookup('env','artifact_id') }} / {{ lookup('env','extension') }}"
+      state: present
+      src: "/tmp/{{ lookup('env','artifact_id') }}"
+    register: deploy
+
+  - debug:
+        msg: "{{  deploy }}"
